@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KULZZY PAYMENT CORE</title>
+
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    width:100%;
+    min-height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#020b1c;
+    color:white;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+.page{
+    min-height:100vh;
+    padding:20px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.header{
+    width:100%;
+    max-width:600px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.logo{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:50%;
+    border:3px solid #ffd700;
+    margin-bottom:12px;
+}
+
+.header h1{
+    color:#ffd700;
+    font-size:25px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.header p{
+    margin-top:6px;
+    color:#fff;
+    font-size:13px;
+    opacity:.8;
+}
+
+.card{
+    width:100%;
+    max-width:600px;
+    background:#071a35;
+    border:2px solid #d6a900;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 0 25px rgba(255,215,0,.12);
+}
+
+.card-title{
+    color:#ffd700;
+    font-size:21px;
+    font-weight:900;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+label{
+    display:block;
+    color:#ffd700;
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:7px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid #53657d;
+    outline:none;
+    background:#020b1c;
+    color:white;
+    font-size:15px;
+    margin-bottom:15px;
+}
+
+input:focus{
+    border-color:#ffd700;
+}
+
+.purpose-box{
+    background:#020b1c;
+    border:1px solid #53657d;
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:15px;
+}
+
+.purpose-label{
+    color:#aaa;
+    font-size:11px;
+    margin-bottom:5px;
+}
+
+#purposeDisplay{
+    color:#ffd700;
+    font-size:17px;
+    font-weight:900;
+    word-break:break-word;
+}
+
+.amount-box{
+    text-align:center;
+    padding:18px;
+    background:#020b1c;
+    border:1px solid #d6a900;
+    border-radius:12px;
+    margin:10px 0 18px;
+}
+
+.amount-label{
+    color:#aaa;
+    font-size:12px;
+}
+
+#amountDisplay{
+    color:#ffd700;
+    font-size:34px;
+    font-weight:900;
+    margin-top:5px;
+}
+
+.pay-button{
+    width:100%;
+    padding:17px;
+    border:0;
+    border-radius:12px;
+    background:#ffd700;
+    color:#020b1c;
+    font-size:17px;
+    font-weight:900;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.pay-button:hover{
+    transform:scale(1.01);
+}
+
+.pay-button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.error-box{
+    display:none;
+    background:#5c1010;
+    border:1px solid #ff4444;
+    color:#fff;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.success-box{
+    display:none;
+    width:100%;
+    max-width:600px;
+    margin-top:18px;
+    padding:20px;
+    text-align:center;
+    background:#073b20;
+    border:2px solid #20d879;
+    border-radius:15px;
+}
+
+.success-box h2{
+    color:#20d879;
+    margin-bottom:8px;
+}
+
+.success-box p{
+    font-size:13px;
+    line-height:1.6;
+}
+
+.return-button{
+    margin-top:15px;
+    padding:12px 20px;
+    border:0;
+    border-radius:9px;
+    background:#ffd700;
+    color:#020b1c;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.footer{
+    margin-top:25px;
+    text-align:center;
+    color:#ffd700;
+    font-size:12px;
+    font-weight:bold;
+    letter-spacing:2px;
+}
+
+.small-note{
+    margin-top:12px;
+    text-align:center;
+    color:#aaa;
+    font-size:11px;
+    line-height:1.5;
+}
+
+@media(max-width:480px){
+
+    .page{
+        padding:15px 10px;
+    }
+
+    .card{
+        padding:17px;
+    }
+
+    .header h1{
+        font-size:22px;
+    }
+
+    #amountDisplay{
+        font-size:30px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="header">
+
+        <img
+            class="logo"
+            src="https://kulzzy.github.io/app/logo.jpg"
+            alt="Kulzzy Radio"
+        >
+
+        <h1>KULZZY PAYMENT CORE</h1>
+
+        <p>Secure payment gateway for Kulzzy Radio Network</p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+            COMPLETE YOUR PAYMENT
+        </div>
+
+
+        <div id="errorBox" class="error-box"></div>
+
+
+        <div class="purpose-box">
+
+            <div class="purpose-label">
+                PAYMENT PURPOSE
+            </div>
+
+            <div id="purposeDisplay">
+                SUPPORT US
+            </div>
+
+        </div>
+
+
+        <div class="amount-box">
+
+            <div class="amount-label">
+                AMOUNT TO PAY
+            </div>
+
+            <div id="amountDisplay">
+                ₦0
+            </div>
+
+        </div>
+
+
+        <label for="customerName">
+            YOUR NAME
+        </label>
+
+        <input
+            id="customerName"
+            type="text"
+            placeholder="Enter your name"
+        >
+
+
+        <label for="customerEmail">
+            EMAIL ADDRESS *
+        </label>
+
+        <input
+            id="customerEmail"
+            type="email"
+            placeholder="Enter your email address"
+            required
+        >
+
+
+        <label for="customerPhone">
+            PHONE NUMBER
+        </label>
+
+        <input
+            id="customerPhone"
+            type="tel"
+            placeholder="Enter your phone number"
+        >
+
+
+        <button
+            id="payButton"
+            class="pay-button"
+            type="button"
+        >
+            PAY NOW
+        </button>
+
+
+        <div class="small-note">
+            Your payment is processed securely through Flutterwave.
+        </div>
+
+    </div>
+
+
+    <div id="successBox" class="success-box">
+
+        <h2>PAYMENT RECEIVED</h2>
+
+        <p>
+            Your payment has been received successfully.
+            Thank you for supporting Kulzzy Radio Network.
+        </p>
+
+        <button
+            id="returnButton"
+            class="return-button"
+            type="button"
+        >
+            RETURN
+        </button>
+
+    </div>
+
+
+    <div class="footer">
+        STAY TUNED IN
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   KULZZY PAYMENT CORE
+   ===================================================== */
+
+const FLUTTERWAVE_PUBLIC_KEY =
+"FLWPUBK-b740721cd84bc6766656034a47fc7606-X";
+
+
+const VERIFICATION_URL =
+"https://script.google.com/macros/s/AKfycby_TG1BdvAw4KEq5bDURsdfvO7V5HpvAPITupYng9hMzOHsyR5-A64iihUt3vR7uzByxQ/exec";
+
+
+const DEFAULT_PURPOSE = "SUPPORT US";
+
+
+const DEFAULT_RETURN_URL =
+"https://kulzzy.github.io/app/";
+
+
+/* =====================================================
+   ELEMENTS
+   ===================================================== */
+
+const purposeDisplay =
+document.getElementById("purposeDisplay");
+
+const amountDisplay =
+document.getElementById("amountDisplay");
+
+const customerName =
+document.getElementById("customerName");
+
+const customerEmail =
+document.getElementById("customerEmail");
+
+const customerPhone =
+document.getElementById("customerPhone");
+
+const payButton =
+document.getElementById("payButton");
+
+const errorBox =
+document.getElementById("errorBox");
+
+const successBox =
+document.getElementById("successBox");
+
+const returnButton =
+document.getElementById("returnButton");
+
+
+/* =====================================================
+   URL PARAMETERS
+   ===================================================== */
+
+const params =
+new URLSearchParams(window.location.search);
+
+
+const urlPurpose =
+params.get("purpose");
+
+
+const urlAmount =
+params.get("amount");
+
+
+const urlReturn =
+params.get("return");
+
+
+const urlProduct =
+params.get("product");
+
+
+const urlEmail =
+params.get("email");
+
+
+const urlName =
+params.get("name");
+
+
+const urlPhone =
+params.get("phone");
+
+
+/* =====================================================
+   PURPOSE
+   ===================================================== */
+
+const purpose =
+urlPurpose ||
+urlProduct ||
+DEFAULT_PURPOSE;
+
+
+purposeDisplay.textContent =
+purpose;
+
+
+/* =====================================================
+   CUSTOMER DETAILS
+   ===================================================== */
+
+if(urlEmail){
+    customerEmail.value =
+    urlEmail;
+}
+
+if(urlName){
+    customerName.value =
+    urlName;
+}
+
+if(urlPhone){
+    customerPhone.value =
+    urlPhone;
+}
+
+
+/* =====================================================
+   AMOUNT
+   ===================================================== */
+
+let amount =
+parseFloat(urlAmount || "0");
+
+
+if(!Number.isFinite(amount)){
+    amount = 0;
+}
+
+
+amountDisplay.textContent =
+"₦" +
+amount.toLocaleString("en-NG");
+
+
+/* =====================================================
+   ERROR
+   ===================================================== */
+
+function showError(message){
+
+    errorBox.textContent =
+    message;
+
+    errorBox.style.display =
+    "block";
+
+}
+
+
+function hideError(){
+
+    errorBox.style.display =
+    "none";
+
+}
+
+
+/* =====================================================
+   TRANSACTION REFERENCE
+   ===================================================== */
+
+function createTransactionReference(){
+
+    const cleanPurpose =
+    purpose
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g,"-")
+        .replace(/^-|-$/g,"")
+        .substring(0,35);
+
+
+    const timestamp =
+    Date.now();
+
+
+    const random =
+    Math.random()
+        .toString(36)
+        .substring(2,9)
+        .toUpperCase();
+
+
+    return (
+        "KULZZY-" +
+        cleanPurpose +
+        "-" +
+        timestamp +
+        "-" +
+        random
+    );
+
+}
+
+
+/* =====================================================
+   START PAYMENT
+   ===================================================== */
+
+function startPayment(){
+
+    hideError();
+
+
+    if(!amount || amount <= 0){
+
+        showError(
+            "A valid payment amount is required."
+        );
+
+        return;
+    }
+
+
+    const email =
+    customerEmail.value.trim();
+
+
+    if(!email){
+
+        showError(
+            "Please enter your email address."
+        );
+
+        customerEmail.focus();
+
+        return;
+    }
+
+
+    const name =
+    customerName.value.trim();
+
+
+    const phone =
+    customerPhone.value.trim();
+
+
+    const txRef =
+    createTransactionReference();
+
+
+    payButton.disabled =
+    true;
+
+    payButton.textContent =
+    "OPENING PAYMENT...";
+
+
+    FlutterwaveCheckout({
+
+        public_key:
+        FLUTTERWAVE_PUBLIC_KEY,
+
+        tx_ref:
+        txRef,
+
+        amount:
+        amount,
+
+        currency:
+        "NGN",
+
+        payment_options:
+        "card,banktransfer,ussd,account,nqr,opay",
+
+        customer:{
+
+            email:
+            email,
+
+            name:
+            name,
+
+            phone_number:
+            phone
+
+        },
+
+        customizations:{
+
+            title:
+            "KULZZY RADIO NETWORK",
+
+            description:
+            purpose,
+
+            logo:
+            "https://kulzzy.github.io/app/logo.jpg"
+
+        },
+
+
+        callback:function(response){
+
+            const transactionId =
+                response.transaction_id ||
+                response.id ||
+                (
+                    response.data &&
+                    response.data.id
+                );
+
+
+            if(!transactionId){
+
+                showError(
+                    "Payment response received, but transaction ID was not found."
+                );
+
+                payButton.disabled =
+                false;
+
+                payButton.textContent =
+                "PAY NOW";
+
+                return;
+            }
+
+
+            const verificationParams =
+            new URLSearchParams({
+
+                transaction_id:
+                String(transactionId),
+
+                amount:
+                String(amount),
+
+                tx_ref:
+                txRef,
+
+                email:
+                email
+
+            });
+
+
+            window.location.href =
+                VERIFICATION_URL +
+                "?" +
+                verificationParams.toString();
+
+        },
+
+
+        onclose:function(){
+
+            payButton.disabled =
+            false;
+
+            payButton.textContent =
+            "PAY NOW";
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   PAY BUTTON
+   ===================================================== */
+
+payButton.addEventListener(
+    "click",
+    startPayment
+);
+
+
+/* =====================================================
+   RETURN BUTTON
+   ===================================================== */
+
+returnButton.addEventListener(
+    "click",
+    function(){
+
+        window.location.href =
+        urlReturn ||
+        DEFAULT_RETURN_URL;
+
+    }
+);
+
+
+/* =====================================================
+   PUBLIC PAYMENT API
+   ===================================================== */
+
+window.KulzzyPayment = {
+
+    open:function(options = {}){
+
+        const target =
+        new URL(
+            window.location.href
+        );
+
+
+        if(options.purpose !== undefined){
+
+            target.searchParams.set(
+                "purpose",
+                options.purpose
+            );
+
+        }
+
+
+        if(options.amount !== undefined){
+
+            target.searchParams.set(
+                "amount",
+                options.amount
+            );
+
+        }
+
+
+        if(options.return !== undefined){
+
+            target.searchParams.set(
+                "return",
+                options.return
+            );
+
+        }
+
+
+        if(options.product !== undefined){
+
+            target.searchParams.set(
+                "product",
+                options.product
+            );
+
+        }
+
+
+        if(options.email !== undefined){
+
+            target.searchParams.set(
+                "email",
+                options.email
+            );
+
+        }
+
+
+        if(options.name !== undefined){
+
+            target.searchParams.set(
+                "name",
+                options.name
+            );
+
+        }
+
+
+        if(options.phone !== undefined){
+
+            target.searchParams.set(
+                "phone",
+                options.phone
+            );
+
+        }
+
+
+        window.location.href =
+        target.toString();
+
+    }
+
+};
+
+
+/* =====================================================
+   READY
+   ===================================================== */
+
+console.log(
+    "KULZZY PAYMENT CORE READY"
+);
+
+</script>
+
+</body>
+</html>
